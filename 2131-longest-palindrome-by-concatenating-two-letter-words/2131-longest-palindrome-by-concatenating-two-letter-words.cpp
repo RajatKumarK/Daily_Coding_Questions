@@ -1,47 +1,45 @@
 class Solution {
-    string reverse(string s){
-        string ans = "";
-        for(int i=s.length()-1;i>=0;i--){
-            ans+=s[i];
-        }
-        return ans;
-    }
-    int max(int a,int b){
-        return ((a>b)?a:b);
-    }
 public:
     int longestPalindrome(vector<string>& words) {
-        map<string,int>mp;
-        for(auto i:words){
-            mp[i]++;
-        }
-        int ans = 0;
-        // map<string,int>::iterator itr;
-        for(auto i= mp.begin();i!=mp.end();i++){
-            string s = i->first;
-            string r = reverse(s);
-            if(mp[r]>0 && r!=s){
-                int miniC = min(mp[s],mp[r]);
-                ans+=2*s.length()*miniC;
-                mp[r]-=miniC;
-                mp[s]-=miniC;                
+        unordered_map<string,int> mp;
+        unordered_map<string,int> same;
+        int n = words.size();
+        int res=0;
+        for(int i=0;i<n;i++){
+            if(words[i][0]!=words[i][1]){
+                mp[words[i]]++;
             }
-           else if(mp[i->first]>0 && reverse(i->first)==(i->first)){
-                int lC = 2*(mp[s]/2);
-                ans +=lC*s.length();
-                mp[r]-=lC;
-            }
-            // cout<<ans<<"*";
-        }
-        int maxi = INT_MIN;
-        for(auto i=mp.begin();i!=mp.end();i++){
-            // string s = i->first;
-            // string r = reverse(s);
-            if(mp[i->first]>0 && reverse(i->first)==(i->first)){
-                maxi = max(maxi,(i->first).length());
+            else{
+                same[words[i]]++;
             }
         }
-        ans+=(maxi==INT_MIN?0:maxi);
-        return ans;
+        for(auto &x: mp){
+            string t="";
+            t+=x.first[1];
+            t+=x.first[0];
+            if(mp.find(t)!=mp.end()){
+                res+= min(x.second,mp[t]);
+            }
+        }
+        res*=2;
+        bool odd=false;
+        for(auto &x: same){
+            if(odd){
+                if(x.second%2==1){
+                    res+= 2*(x.second-1);
+                }
+                else{
+                    res+= 2*(x.second);
+                }
+            }
+            else{
+                if(x.second%2==1){
+                    odd=true;
+                }
+                res+= 2*(x.second);
+            }
+            
+        }
+        return res;
     }
 };
